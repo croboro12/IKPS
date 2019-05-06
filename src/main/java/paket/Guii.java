@@ -303,44 +303,6 @@ public class Guii extends JFrame {
 				} );
 		contentPane.add(btnAlokacija);
 		
-		JButton btnAlokacija_1 = new JButton("Alokacija");
-		btnAlokacija_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				 fc = new JFileChooser();
-				  returnVal = fc.showOpenDialog(fc);
-				
-				    if (returnVal == JFileChooser.APPROVE_OPTION) {
-				        file = fc.getSelectedFile();
-				        // What to do with the file, e.g. display it in a TextArea
-				       pathalloc = file.getAbsolutePath().toString(); //uzima path od fajla
-				      
-				        try {
-				        		if (pathalloc.endsWith(".arff")) { // ako zavrsava sa arff onda je priznat 
-				        			DataSource source = new DataSource(pathalloc);
-				    				
-				    				Instances testData = source.getDataSet();
-				    				
-					        		textArea.append("\nSkup podataka odabran: " + pathalloc); // ispis puta testa
-					        		NormalAnomal.pogonskiNormalAnomal(testData, source);
-					        		
-				        		}else {
-				        			textArea.append("\nFormat podataka nije valjan\n");
-				        			
-				        		}
-							
-						} catch (Exception e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
-				    } else {
-				        System.out.println("File access cancelled by user.");
-				    }
-				    
-			}
-		});
-		btnAlokacija_1.setBounds(261, 195, 89, 23);
-		contentPane.add(btnAlokacija_1);
-		
 		btnCsvarff.addActionListener(new ActionListener() { 
 			  public void actionPerformed(ActionEvent e) { 
 				  fc = new JFileChooser();

@@ -26,52 +26,50 @@ public class NormalAnomal {
 			e.printStackTrace();
 		}
 	}
-	static void treningAllocatora(Instances vecinskeKlase, Instances pocetnSkup, DataSource source) throws Exception {
+	static void treningAllocatora(Instances vecinskeKlase, Instances treningData, Instances test) throws Exception {
 		
 		NormalAnomal.vecinske = vecinskeKlase;
-	    vecinskeKlase.setClassIndex(vecinskeKlase.numAttributes() - 1);
-		libsvm.buildClassifier(vecinskeKlase);
+	 	libsvm.buildClassifier(vecinskeKlase); //trneing na vecinskim
+	 	Instances dodavanje = new Instances(test); // ovo da ne izgubimo pravu klasnu vrijednost
+		MajorityMin.changeLabel(test); // da imamo jednu nominalnu vrijednost
+		Evaluation eval = new Evaluation(test);
 		
-		//pogonskiNormalAnomal(pocetnSkup, source);
-		
-	//	ispis();
-		
-		
-	//	MikroKlasifikatori.obradaNormalnihiAnomalnih();
-	}
-	static void pogonskiNormalAnomal(Instances pocetnSkup, DataSource source) throws Exception {
-		MajorityMin.changeLabel(pocetnSkup);
-		Evaluation eval = new Evaluation(pocetnSkup);
-		libsvm.buildClassifier(pocetnSkup);
-		eval.evaluateModel(libsvm, pocetnSkup);
+		eval.evaluateModel(libsvm, test);//evaluacija sa trneingom pocetnim
 		//System.out.println(eval3.toSummaryString());
 		
-		normal = source.getDataSet();
-		anomal = source.getDataSet();
+		normal = new Instances(dodavanje); //jer imamo onaj pocetni pravi trening, vise nemamo ovaj trenin jer smo promjenili labele
+		anomal = new Instances(dodavanje);
 		normal.delete();
-		anomal.delete();
-		Instances dodavanje = source.getDataSet();
-		for(int i = 0; i < pocetnSkup.numInstances(); i++) {
+		anomal.delete();//prazan skup
+		
+		for(int i = 0; i < test.numInstances(); i++) {
 	
-			double resIns = eval.evaluateModelOnce(libsvm, pocetnSkup.instance(i));
+			double resIns = eval.evaluateModelOnce(libsvm, test.instance(i));
 			if(resIns == 0.0) {
 				
 				normal.add(dodavanje.instance(i));
+				
 			}else {
 				anomal.add(dodavanje.instance(i));
+			
 			}
-		//	System.out.print(String.valueOf(resIns)+" ");
+			
 			
 
 		}
 		normal.setClassIndex(normal.numAttributes() - 1);
 		anomal.setClassIndex(anomal.numAttributes() - 1);
-		
-		ispis();
+		/*System.out.println("Broj vecinski" + vecinskeKlase.numInstances());
+		System.out.println("BROJ test" + test.numInstances());
+		System.out.println("BROJ noorm" + normal.numInstances());
+		System.out.println("BROJ ano" + anomal.numInstances());
+		ispis();*/
 		
 		
 		MikroKlasifikatori.obradaNormalnihiAnomalnih();
+		
 	}
+
 	static void ispis() {
 		System.out.println("========== ISPIS NORMALNIH =========");
 		for(int i = 0; i < normal.numInstances(); i++) {

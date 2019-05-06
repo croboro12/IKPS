@@ -26,22 +26,40 @@ public class MajorityMin {
 	static String skupKlasa[];
 	static int pozicijamaxa = 0;
 	static Instances vecinskeKlase;
+	static Rezulat[] rezultati= new Rezulat[6];
+	static {
+		rezultati[0] = new Rezulat("J48");
+		rezultati[1] = new Rezulat("NaiveBayes");
+		rezultati[2] = new Rezulat("SMO");
+		
+	}
 	public static void alloc(String path) throws Exception {
 		//load dataset
+				
 				DataSource source = new DataSource(path);
+				//treba napraviti 5fold cros validaciju podataka 80:20
+				Instances trainingData;
 				
-				Instances trainingData = source.getDataSet();
-				trainingData.setClassIndex(trainingData.numAttributes() - 1);
-				vecinskeKlase = vratiMajoriti(trainingData, source);
+				Instances testData;
 				
-				vecinskeKlase = changeLabel(vecinskeKlase);
-				Instances pocetnSkup = source.getDataSet();
+				for (int i = 0; i < 5; i++) {
+					
+					trainingData = source.getDataSet().trainCV(5, i);
+					testData = source.getDataSet().testCV(5, i);
+					
+	
+					trainingData.setClassIndex(trainingData.numAttributes() - 1);
+					vecinskeKlase = vratiMajoriti(new Instances(trainingData)); //majoritiy minority split
+					
+					vecinskeKlase = changeLabel(vecinskeKlase);
+		
+					NormalAnomal.treningAllocatora(vecinskeKlase, trainingData, testData);
+					
+				}
+				ispisRezultata();
 				
-				pocetnSkup = changeLabel(pocetnSkup);
-				pocetnSkup.setClassIndex(pocetnSkup.numAttributes() - 1);
 				
-				NormalAnomal.treningAllocatora(vecinskeKlase, pocetnSkup, source);
-
+				
 			/*	SMO svm = new SMO();
 				svm.buildClassifier(vecinskeKlase);
 				Evaluation eval2 = new Evaluation(trainingData);
@@ -85,7 +103,7 @@ public class MajorityMin {
 				AdaBoostM1 m1 = new AdaBoostM1();
 				m1.setClassifier(new DecisionStump());//needs one base-classifier
 				m1.setNumIterations(20);
-				m1.buildClassifier(trainingData);
+			//	m1.buildClassifier(trainingData);
 				
 				/* Bagging a classifier to reduce variance.
 				 * Can do classification and regression (depending on the base model)
@@ -94,7 +112,7 @@ public class MajorityMin {
 				Bagging bagger = new Bagging();
 				bagger.setClassifier(new RandomTree());//needs one base-model
 				bagger.setNumIterations(25);
-				bagger.buildClassifier(trainingData);		
+				//bagger.buildClassifier(trainingData);		
 				
 				/*
 				 * The Stacking method combines several models
@@ -109,7 +127,7 @@ public class MajorityMin {
 						new RandomForest()
 				};
 				stacker.setClassifiers(classifiers);//needs one or more models
-				stacker.buildClassifier(trainingData);
+			//	stacker.buildClassifier(trainingData);
 				
 				/*
 				 * Class for combining classifiers.
@@ -118,9 +136,9 @@ public class MajorityMin {
 				//Vote .. 
 				Vote voter = new Vote();
 				voter.setClassifiers(classifiers);//needs one or more classifiers
-				voter.buildClassifier(trainingData);
+				//voter.buildClassifier(trainingData);
 }
-private static Instances vratiMajoriti(Instances trainingData, DataSource source) throws Exception {
+private static Instances vratiMajoriti(Instances trainingData) throws Exception {
 	//set class index .. as the last attribute
 	if (trainingData.classIndex() == -1) {
 		trainingData.setClassIndex(trainingData.numAttributes() - 1);
@@ -128,7 +146,7 @@ private static Instances vratiMajoriti(Instances trainingData, DataSource source
 	skupKlasa = new String[trainingData.numClasses()];
 	//System.out.println(trainingData.instance(0).getClass() +" "+ trainingData.instance(22).);
 	for(int i = 0, l = skupKlasa.length; i < l; i++) {
-		System.out.println("ulaz");
+		//System.out.println("ulaz");
 		for(int j = 0, h = trainingData.numInstances(); j < h; j++) {
 			if(i == 0) {
 				skupKlasa[i] = trainingData.instance(j).stringValue(trainingData.classAttribute());
@@ -148,7 +166,8 @@ private static Instances vratiMajoriti(Instances trainingData, DataSource source
 			
 		}
 	}
-	/*for(String skup : skupKlasa) {
+	/*System.out.println(trainingData.numInstances());
+	for(String skup : skupKlasa) {
 		System.out.println(skup);
 	}*/
 	int brojKlasa[] = new int[skupKlasa.length];
@@ -159,6 +178,9 @@ private static Instances vratiMajoriti(Instances trainingData, DataSource source
 			}
 		}
 	}
+	/*for(int i : brojKlasa) {
+		System.out.println("BROJ ovih je " + i);
+	}*/
 	int max = brojKlasa[0];
 	
 	for(int i = 1; i < brojKlasa.length; i++) {
@@ -175,13 +197,14 @@ private static Instances vratiMajoriti(Instances trainingData, DataSource source
 		polovica = trainingData.numInstances() / 2;
 	}
 	
-	Instances vecinskeKlase = source.getDataSet();
+	Instances vecinskeKlase = new Instances(trainingData);
 	vecinskeKlase.delete();
 	
 	for(int i = 0, j = 0; i < polovica; i++) {
-		while(true) {
+		while(j < trainingData.numInstances()) {
 			if(skupKlasa[pozicijamaxa].equals(trainingData.instance(j).stringValue(trainingData.numAttributes() - 1))){
 				vecinskeKlase.add(trainingData.instance(j));
+				//System.out.println(trainingData.instance(j));
 				j++;
 				break;
 			}
@@ -192,7 +215,7 @@ private static Instances vratiMajoriti(Instances trainingData, DataSource source
 	return vecinskeKlase;
 	}
 public static Instances changeLabel(Instances skup){
-
+	skup.setClassIndex(-1);
 	FastVector values = new FastVector(); /* FastVector is now deprecated. Users can use any java.util.List */
     values.addElement(skupKlasa[pozicijamaxa]);               /* implementation now */
     skup.deleteAttributeAt(skup.numAttributes() - 1);
@@ -203,4 +226,14 @@ public static Instances changeLabel(Instances skup){
 	skup.setClassIndex(skup.numAttributes() - 1);
 	return skup;
 	}
+public static String imeFajla() {
+	return vecinskeKlase.relationName();
 }
+public static void ispisRezultata() {
+	System.out.println(rezultati[0]);
+	System.out.println(rezultati[1]);
+	System.out.println(rezultati[2]);
+}
+
+}
+

@@ -98,7 +98,7 @@ public class Guii extends JFrame {
 					
 					
 				 } catch (Exception e1) {
-					// TODO Auto-generated catch block
+					
 					e1.printStackTrace();
 				}
 				}} );
@@ -127,7 +127,7 @@ public class Guii extends JFrame {
 				        		}
 							
 						} catch (Exception e1) {
-							// TODO Auto-generated catch block
+							
 							e1.printStackTrace();
 						}
 				    } else {
@@ -178,7 +178,7 @@ public class Guii extends JFrame {
 				        		}
 							
 						} catch (Exception e1) {
-							// TODO Auto-generated catch block
+							
 							e1.printStackTrace();
 						}
 				    } else {
@@ -206,7 +206,7 @@ public class Guii extends JFrame {
 						 Graph(poljetocnosti,geomtocnosto,brojactresh,xos);
 					
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
+				
 					e1.printStackTrace();
 				}
 			}
@@ -225,7 +225,7 @@ public class Guii extends JFrame {
 						
 					 }
 				} catch (Exception e1) {
-					// TODO Auto-generated catch block
+					
 					e1.printStackTrace();
 				}
 			}
@@ -260,7 +260,7 @@ public class Guii extends JFrame {
 				try {
 					restartApplication();
 				} catch (URISyntaxException | IOException e1) {
-					// TODO Auto-generated catch block
+					
 					e1.printStackTrace();
 				}
 			}
@@ -292,7 +292,7 @@ public class Guii extends JFrame {
 				        		}
 							
 						} catch (Exception e1) {
-							// TODO Auto-generated catch block
+							
 							e1.printStackTrace();
 						}
 				    } else {
@@ -325,7 +325,7 @@ public class Guii extends JFrame {
 				        		}
 							
 						} catch (Exception e1) {
-							// TODO Auto-generated catch block
+							
 							e1.printStackTrace();
 						}
 				    } else {

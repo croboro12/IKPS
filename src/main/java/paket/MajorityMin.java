@@ -31,30 +31,40 @@ public class MajorityMin {
 		rezultati[0] = new Rezulat("J48");
 		rezultati[1] = new Rezulat("NaiveBayes");
 		rezultati[2] = new Rezulat("SMO");
-		
+		rezultati[3] = new Rezulat("NBTree");
+		rezultati[4] = new Rezulat("OneR");
+		rezultati[5] = new Rezulat("IBk");
 	}
 	public static void alloc(String path) throws Exception {
 		//load dataset
 				
-				DataSource source = new DataSource(path);
+				DataSource source = new DataSource(path); // uzima path od dataseta
 				//treba napraviti 5fold cros validaciju podataka 80:20
 				Instances trainingData;
 				
 				Instances testData;
-				
-				for (int i = 0; i < 5; i++) {
+				Instances Podaci = source.getDataSet();
+				Podaci.randomize(new java.util.Random(0)); // Pomijesaj podaci
+			/*	for(int i = 0; i < Podaci.numInstances(); i++) {
+					System.out.println(Podaci.instance(i));
+				}*/
+				for (int i = 0; i < 5; i++) { // 5 fold cross validation
 					
-					trainingData = source.getDataSet().trainCV(5, i);
-					testData = source.getDataSet().testCV(5, i);
+					trainingData = Podaci.trainCV(5, i); // ovo uzima train podatke
+					testData = Podaci.testCV(5, i);
 					
 	
-					trainingData.setClassIndex(trainingData.numAttributes() - 1);
+					trainingData.setClassIndex(trainingData.numAttributes() - 1); // klasa je zadnji atribut
 					vecinskeKlase = vratiMajoriti(new Instances(trainingData)); //majoritiy minority split
+					//System.out.println("ISPIS VECINSKIH");
+					//for(int j = 0; j < vecinskeKlase.numInstances(); j++) {
+						//System.out.println(vecinskeKlase.instance(j));
+					//}
+					vecinskeKlase = changeLabel(vecinskeKlase);//mijenja oznaku zadnjeg atributa, mora imati jednu oznaku
 					
-					vecinskeKlase = changeLabel(vecinskeKlase);
-		
-					NormalAnomal.treningAllocatora(vecinskeKlase, trainingData, testData);
-					
+				//System.out.println("vecinskih ima " + vecinskeKlase.numInstances());
+				NormalAnomal.treningAllocatora(vecinskeKlase, trainingData, testData);//trening modela predvidjanja, allocatora
+				//Rezulat.racunaj();	
 				}
 				ispisRezultata();
 				
@@ -140,37 +150,20 @@ public class MajorityMin {
 }
 private static Instances vratiMajoriti(Instances trainingData) throws Exception {
 	//set class index .. as the last attribute
-	if (trainingData.classIndex() == -1) {
+	if (trainingData.classIndex() == -1) {//ako nema postavljenu klasnu oznaku
 		trainingData.setClassIndex(trainingData.numAttributes() - 1);
 	}
-	skupKlasa = new String[trainingData.numClasses()];
+	skupKlasa = new String[trainingData.numClasses()]; //koliko klasa ima
 	//System.out.println(trainingData.instance(0).getClass() +" "+ trainingData.instance(22).);
-	for(int i = 0, l = skupKlasa.length; i < l; i++) {
-		//System.out.println("ulaz");
-		for(int j = 0, h = trainingData.numInstances(); j < h; j++) {
-			if(i == 0) {
-				skupKlasa[i] = trainingData.instance(j).stringValue(trainingData.classAttribute());
-				break;
-			}
-			boolean izlaz = false;
-			for(int k = 0; k < i; k++) {
-				if(skupKlasa[k].equals(trainingData.instance(j).stringValue(trainingData.classAttribute()))){
-					izlaz = true;
-					break;
-				}
-			}
-			if(!izlaz) {
-				skupKlasa[i] = trainingData.instance(j).stringValue(trainingData.classAttribute());
-				break;
-			}
-			
-		}
+	for (int i=0;i<trainingData.classAttribute().numValues();i++) {
+        skupKlasa[i] = trainingData.classAttribute().value(i);
+        //NADJI POJEDINE KLASE
 	}
-	/*System.out.println(trainingData.numInstances());
+	//System.out.println(trainingData.numInstances()); //ISPIS broja instanci i tih klasnih oznaka
 	for(String skup : skupKlasa) {
-		System.out.println(skup);
-	}*/
-	int brojKlasa[] = new int[skupKlasa.length];
+		System.out.println(skup);//u slucaju iris.arff TRI SU
+	}
+	int brojKlasa[] = new int[skupKlasa.length];//sad prebroji koliko ima koje...
 	for(int i = 0, h = trainingData.numInstances(); i < h; i++) {
 		for(int k = 0; k < skupKlasa.length; k++) {
 			if(skupKlasa[k].equals(trainingData.instance(i).stringValue(trainingData.numAttributes() - 1))){
@@ -178,30 +171,38 @@ private static Instances vratiMajoriti(Instances trainingData) throws Exception 
 			}
 		}
 	}
-	/*for(int i : brojKlasa) {
-		System.out.println("BROJ ovih je " + i);
-	}*/
+	for(int i : brojKlasa) {
+		System.out.println("BROJ ovih je " + i); //ispisi koliko je koje klase
+	}
 	int max = brojKlasa[0];
-	
-	for(int i = 1; i < brojKlasa.length; i++) {
+	pozicijamaxa = 0; // da nebi ostalo od zadnji put :)) 
+	//SADA IDE MAJORITI MINORITI
+	for(int i = 1; i < brojKlasa.length; i++) {//nadji koje ima najvise
 		if(brojKlasa[i] > max) {
 			max = brojKlasa[i];
 			pozicijamaxa = i;
 		}
 		
 	}
+	System.out.println("Najvise je " + skupKlasa[pozicijamaxa]);
+	//OVO dole je iz algoritma da pomakne polovicu
 	int polovica;
 	if(trainingData.numInstances() / 2 == 1) {
-		polovica = trainingData.numInstances() / 2 +1;
+		polovica = trainingData.numInstances() / 2 + 1;
 	}else {
 		polovica = trainingData.numInstances() / 2;
 	}
-	
+	// stvori nove vecinske klase 
 	Instances vecinskeKlase = new Instances(trainingData);
-	vecinskeKlase.delete();
+	vecinskeKlase.delete(); //isprazni ih jer cemo ponovno punit nekim svojima
 	
-	for(int i = 0, j = 0; i < polovica; i++) {
-		while(j < trainingData.numInstances()) {
+	for(int i = 0, j = 0; i < polovica; i++) {//imamo polovicu treninga skupa pod
+		while(j < trainingData.numInstances()) { // idi do kraja
+			//ako klasa oznaka pripada vecinskoj idi tu i dodaj tu vecinsku
+			
+			//OVDJE MOZE DOCI DA VECINSKE IMAJU MANJE OD POLOVICE??!?!??
+			//VIDITI MALO
+			
 			if(skupKlasa[pozicijamaxa].equals(trainingData.instance(j).stringValue(trainingData.numAttributes() - 1))){
 				vecinskeKlase.add(trainingData.instance(j));
 				//System.out.println(trainingData.instance(j));
@@ -215,6 +216,7 @@ private static Instances vratiMajoriti(Instances trainingData) throws Exception 
 	return vecinskeKlase;
 	}
 public static Instances changeLabel(Instances skup){
+	//Dodaj attribut samo sa jednom vrijednoscu, i to onom koju ima oznaka koje je najvise...
 	skup.setClassIndex(-1);
 	FastVector values = new FastVector(); /* FastVector is now deprecated. Users can use any java.util.List */
     values.addElement(skupKlasa[pozicijamaxa]);               /* implementation now */
@@ -224,15 +226,17 @@ public static Instances changeLabel(Instances skup){
 		skup.instance(i).setValue(skup.numAttributes() - 1, skupKlasa[pozicijamaxa]);
 	}
 	skup.setClassIndex(skup.numAttributes() - 1);
+	//odavde svaka instaca sada ima samo jednu nominalnu vrijednost
 	return skup;
 	}
 public static String imeFajla() {
-	return vecinskeKlase.relationName();
+	return vecinskeKlase.relationName();//vracaj ime dataseta
 }
 public static void ispisRezultata() {
-	System.out.println(rezultati[0]);
-	System.out.println(rezultati[1]);
-	System.out.println(rezultati[2]);
+	System.out.println("Ispis rezultata:");
+	for(Rezulat rez : rezultati) {
+		System.out.println(rez);
+	}
 }
 
 }

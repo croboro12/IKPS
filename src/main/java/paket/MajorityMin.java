@@ -28,12 +28,14 @@ public class MajorityMin {
 	static Instances vecinskeKlase;
 	static Rezulat[] rezultati= new Rezulat[6];
 	static {
-		rezultati[0] = new Rezulat("J48");
-		rezultati[1] = new Rezulat("NaiveBayes");
-		rezultati[2] = new Rezulat("SMO");
-		rezultati[3] = new Rezulat("NBTree");
-		rezultati[4] = new Rezulat("OneR");
-		rezultati[5] = new Rezulat("IBk");
+		rezultati[0] = new Rezulat("J48","alloc");
+		rezultati[1] = new Rezulat("NaiveBayes","alloc");
+		rezultati[2] = new Rezulat("SMO","alloc");
+		rezultati[3] = new Rezulat("NBTree","alloc");
+		rezultati[4] = new Rezulat("OneR","alloc");
+		rezultati[5] = new Rezulat("IBk","alloc");
+	
+		
 	}
 	public static void alloc(String path) throws Exception {
 		//load dataset
@@ -56,16 +58,18 @@ public class MajorityMin {
 	
 					trainingData.setClassIndex(trainingData.numAttributes() - 1); // klasa je zadnji atribut
 					vecinskeKlase = vratiMajoriti(new Instances(trainingData)); //majoritiy minority split
-					//System.out.println("ISPIS VECINSKIH");
-					//for(int j = 0; j < vecinskeKlase.numInstances(); j++) {
-						//System.out.println(vecinskeKlase.instance(j));
-					//}
+					/*System.out.println("ISPIS VECINSKIH");
+					for(int j = 0; j < vecinskeKlase.numInstances(); j++) {
+						System.out.println(vecinskeKlase.instance(j));
+					}*/
 					vecinskeKlase = changeLabel(vecinskeKlase);//mijenja oznaku zadnjeg atributa, mora imati jednu oznaku
-					
+				
 				//System.out.println("vecinskih ima " + vecinskeKlase.numInstances());
 				NormalAnomal.treningAllocatora(vecinskeKlase, trainingData, testData);//trening modela predvidjanja, allocatora
-				//Rezulat.racunaj();	
+				//Rezulat.racunaj();
+				
 				}
+
 				ispisRezultata();
 				
 				
@@ -109,11 +113,7 @@ public class MajorityMin {
 				 * Sometimes overfits.
 				 */
 			
-				//AdaBoost .. 
-				AdaBoostM1 m1 = new AdaBoostM1();
-				m1.setClassifier(new DecisionStump());//needs one base-classifier
-				m1.setNumIterations(20);
-			//	m1.buildClassifier(trainingData);
+				
 				
 				/* Bagging a classifier to reduce variance.
 				 * Can do classification and regression (depending on the base model)
@@ -160,9 +160,9 @@ private static Instances vratiMajoriti(Instances trainingData) throws Exception 
         //NADJI POJEDINE KLASE
 	}
 	//System.out.println(trainingData.numInstances()); //ISPIS broja instanci i tih klasnih oznaka
-	for(String skup : skupKlasa) {
+	/*for(String skup : skupKlasa) {
 		System.out.println(skup);//u slucaju iris.arff TRI SU
-	}
+	}*/
 	int brojKlasa[] = new int[skupKlasa.length];//sad prebroji koliko ima koje...
 	for(int i = 0, h = trainingData.numInstances(); i < h; i++) {
 		for(int k = 0; k < skupKlasa.length; k++) {
@@ -171,9 +171,9 @@ private static Instances vratiMajoriti(Instances trainingData) throws Exception 
 			}
 		}
 	}
-	for(int i : brojKlasa) {
+	/*for(int i : brojKlasa) {
 		System.out.println("BROJ ovih je " + i); //ispisi koliko je koje klase
-	}
+	}*/
 	int max = brojKlasa[0];
 	pozicijamaxa = 0; // da nebi ostalo od zadnji put :)) 
 	//SADA IDE MAJORITI MINORITI
@@ -184,7 +184,7 @@ private static Instances vratiMajoriti(Instances trainingData) throws Exception 
 		}
 		
 	}
-	System.out.println("Najvise je " + skupKlasa[pozicijamaxa]);
+	//System.out.println("Najvise je " + skupKlasa[pozicijamaxa]);
 	//OVO dole je iz algoritma da pomakne polovicu
 	int polovica;
 	if(trainingData.numInstances() / 2 == 1) {
@@ -213,6 +213,7 @@ private static Instances vratiMajoriti(Instances trainingData) throws Exception 
 		}
 				
 	}
+	trainingData = null;
 	return vecinskeKlase;
 	}
 public static Instances changeLabel(Instances skup){

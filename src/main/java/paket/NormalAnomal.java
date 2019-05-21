@@ -57,14 +57,15 @@ public class NormalAnomal {
 			
 
 		}
+		dodavanje = null;
 		normal.setClassIndex(normal.numAttributes() - 1);
 		anomal.setClassIndex(anomal.numAttributes() - 1);
 		//System.out.println("Broj vecinski" + vecinskeKlase.numInstances());
-		System.out.println("BROJ test" + test.numInstances());
+		/*System.out.println("BROJ test" + test.numInstances());
 		System.out.println("BROJ noorm" + normal.numInstances());
 		System.out.println("BROJ ano" + anomal.numInstances());
 		ispis();
-		
+		*/
 		
 		MikroKlasifikatori.obradaNormalnihiAnomalnih();
 		

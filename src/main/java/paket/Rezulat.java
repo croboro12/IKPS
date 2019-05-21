@@ -1,12 +1,13 @@
 package paket;
 
 public class Rezulat {
-String ime;
+String ime, tip;
 double accuracy = 0.;
 double recall = 0.;
 double fscore = 0.;
-Rezulat(String i){
+Rezulat(String i, String tip){
 	ime = i;
+	this.tip = tip;
 	}
 
 void racunaj(double matrica[][]) {
@@ -52,9 +53,9 @@ void racunaj(double matrica[][]) {
 	fn /=  NormalAnomal.normal.numClasses();
 	fp /=  NormalAnomal.normal.numClasses();
 	//NJIHOV ZBROJ MORA DAVATI UKUPNI BROJ INSTANCA; DAJE!!! :D
-	System.out.println("tp "+ tp +" tn "+ tn+" fn "+fn+" fp "+fp);
+	//System.out.println("tp "+ tp +" tn "+ tn+" fn "+fn+" fp "+fp);
 	double zbroj = tp + tn +fn +fp;
-	System.out.println(zbroj + " "+NormalAnomal.normal.numInstances()+" "+NormalAnomal.anomal.numInstances());
+	//System.out.println(zbroj + " "+NormalAnomal.normal.numInstances()+" "+NormalAnomal.anomal.numInstances());
 	
 	accuracy += (tp + tn) / (tp + tn + fp + fn); //ZBRAJAM SVE JER OVDJE ULAZIM 5 puta... za svaku 5 fold cross validation
 	recall += tp/ (tp + fn);
@@ -65,7 +66,8 @@ public String toString() {
 	//ispis();
 	// TODO OVDJE PROVJERIT OVO / 5 MISLIM DA VALJA?? OVISI KAKO MANIPULIRATE OVIM GORE
 	//DIJELIM SA 5 zbog 5 fold cros validation
-	return this.ime + "Rezultati Allocation metode za " + MajorityMin.imeFajla() + ".arff:\nAccuracy: "+this.accuracy / 5+" FScore:"+this.fscore / 5;
+	
+	return "========================\n"+this.ime + " ==> rezultati Allocation metode za " + MajorityMin.imeFajla() + ".arff:\nAccuracy: "+this.accuracy / 5+"\nFScore: "+this.fscore / 5;
 }
 /*static void ispis(){
 	System.out.println("TrueP, FalseP, FalseN, TrueN");

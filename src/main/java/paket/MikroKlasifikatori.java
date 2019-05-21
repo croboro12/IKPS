@@ -7,6 +7,9 @@ import weka.classifiers.functions.SMO;
 import weka.classifiers.trees.J48;
 import weka.core.Instances;
 import weka.filters.supervised.attribute.NominalToBinary;
+
+import java.util.Random;
+
 import weka.classifiers.*;
 import weka.classifiers.lazy.IBk;
 import weka.classifiers.rules.OneR;
@@ -20,92 +23,92 @@ public class MikroKlasifikatori {
 		//VELICINA MATRICE JE BROJ KLASNIH OZNAKA U IRIRS.ARFF TO JE 3
 		double[][] rezultati = new double[NormalAnomal.normal.numClasses()][NormalAnomal.normal.numClasses()];
 		//OBRADA NORMALNIH I ANORMALNIH
-		novin = J48(new Instances(NormalAnomal.normal));
-		novia = J48(new Instances(NormalAnomal.anomal));
+		novin = J48(NormalAnomal.normal, false).confusionMatrix();
+		novia = J48(NormalAnomal.anomal, false).confusionMatrix();
 		//OVDJE SPREMAM REZULTAT POMOCU ZBROJI MATRICE
 		//TO ZbRAjA MATRICE OD NORMALNE I ANORMALNE KLASIFIKACIJE
 		//TREBALO BI VALJAT 
 		MajorityMin.rezultati[0].racunaj(zbrojiMatrice(rezultati));
 		
 
-		novin = NaiveBayees(NormalAnomal.normal);
-		novia =  NaiveBayees(NormalAnomal.anomal);
+		novin = NaiveBayees(NormalAnomal.normal, false ).confusionMatrix();
+		novia =  NaiveBayees(NormalAnomal.anomal, false).confusionMatrix();
 		MajorityMin.rezultati[1].racunaj(zbrojiMatrice(rezultati));
 		
 		
 		
 		
-		novin = SiMO(NormalAnomal.normal);
-		novia =  SiMO(NormalAnomal.anomal);
+		novin = SiMO(NormalAnomal.normal, false).confusionMatrix();
+		novia =  SiMO(NormalAnomal.anomal, false).confusionMatrix();
 		MajorityMin.rezultati[2].racunaj(zbrojiMatrice(rezultati));
 		
-		novin = NBTree(NormalAnomal.normal);
-		novia =  NBTree(NormalAnomal.anomal);
+		novin = NBTree(NormalAnomal.normal, false).confusionMatrix();
+		novia =  NBTree(NormalAnomal.anomal, false).confusionMatrix();
 		MajorityMin.rezultati[3].racunaj(zbrojiMatrice(rezultati));
 		
-		novin = OneR(NormalAnomal.normal);
-		novia =  OneR(NormalAnomal.anomal);
+		novin = OneR(NormalAnomal.normal, false).confusionMatrix();
+		novia =  OneR(NormalAnomal.anomal, false).confusionMatrix();
 		MajorityMin.rezultati[4].racunaj(zbrojiMatrice(rezultati));
 		
-		novin = IBk(NormalAnomal.normal);
-		novia =  IBk(NormalAnomal.anomal);
+		novin = IBk(NormalAnomal.normal, false).confusionMatrix();
+		novia =  IBk(NormalAnomal.anomal, false).confusionMatrix();
 		MajorityMin.rezultati[5].racunaj(zbrojiMatrice(rezultati));
 		
 		}
-	static double[][] NBTree(Instances dataset) throws Exception {
+	static Evaluation NBTree(Instances dataset, boolean org) throws Exception {
 		NBTree nbt = new NBTree();
-		Evaluation eval =  vratiMatricu(nbt, dataset, "NBTree");
+		Evaluation eval =  vratiMatricu(nbt, dataset, "NBTree", org);
 		/*for(int i = 0; i < NormalAnomal.normal.numClasses(); i++) {
 			System.out.println(eval.fMeasure(i));
 			MajorityMin.rezultati[1].fscore += eval.fMeasure(i);
 		}*/
-		return eval.confusionMatrix();
+		return eval;
 	}
-	static double[][] IBk(Instances dataset) throws Exception {
+	static Evaluation IBk(Instances dataset, boolean org) throws Exception {
 		IBk ibk = new IBk();
-		Evaluation eval =  vratiMatricu(ibk, dataset, "IBk");
+		Evaluation eval =  vratiMatricu(ibk, dataset, "IBk", org);
 		/*for(int i = 0; i < NormalAnomal.normal.numClasses(); i++) {
 			System.out.println(eval.fMeasure(i));
 			MajorityMin.rezultati[1].fscore += eval.fMeasure(i);
 		}*/
-		return eval.confusionMatrix();
+		return eval;
 	}
-	static double[][] OneR(Instances dataset) throws Exception {
+	static Evaluation OneR(Instances dataset, boolean org) throws Exception {
 		OneR one = new OneR();
-		Evaluation eval =  vratiMatricu(one, dataset, "OneR");
+		Evaluation eval =  vratiMatricu(one, dataset, "OneR", org);
 		/*for(int i = 0; i < NormalAnomal.normal.numClasses(); i++) {
 			System.out.println(eval.fMeasure(i));
 			MajorityMin.rezultati[1].fscore += eval.fMeasure(i);
 		}*/
-		return eval.confusionMatrix();
+		return eval;
 	}
-	static double[][] NaiveBayees(Instances dataset) throws Exception {
+	static Evaluation NaiveBayees(Instances dataset, boolean org) throws Exception {
 		NaiveBayes bayes = new NaiveBayes();
-		Evaluation eval =  vratiMatricu(bayes, dataset, "NaiveBayes");
+		Evaluation eval =  vratiMatricu(bayes, dataset, "NaiveBayes", org);
 		/*for(int i = 0; i < NormalAnomal.normal.numClasses(); i++) {
 			System.out.println(eval.fMeasure(i));
 			MajorityMin.rezultati[1].fscore += eval.fMeasure(i);
 		}*/
-		return eval.confusionMatrix();
+		return eval;
 	}
-	static double[][] J48(Instances dataset) throws Exception {
+	static Evaluation J48(Instances dataset, boolean org) throws Exception {
 		
 		J48 tree = new J48();
-		Evaluation eval = vratiMatricu(tree, dataset, "J48");
+		Evaluation eval = vratiMatricu(tree, dataset, "J48", org);
 		/*for(int i = 0; i < NormalAnomal.normal.numClasses(); i++) {
 			MajorityMin.rezultati[0].fscore += eval.fMeasure(i);
 		}*/
 		
-		return eval.confusionMatrix();
+		return eval;
 	}
 	
-	static double[][] SiMO(Instances dataset) throws Exception {
+	static Evaluation SiMO(Instances dataset, boolean org) throws Exception {
 		SMO smo = new SMO();
-		Evaluation eval = vratiMatricu(smo, dataset, "SMO"); 
+		Evaluation eval = vratiMatricu(smo, dataset, "SMO", org); 
 		/*for(int i = 0; i < NormalAnomal.normal.numClasses(); i++) {
 			MajorityMin.rezultati[2].fscore += eval.fMeasure(i);
 		}*/
-		return eval.confusionMatrix();
+		return eval;
 	}
 	static double[][] zbrojiMatrice(double[][] rezultati) {
 		
@@ -117,7 +120,7 @@ public class MikroKlasifikatori {
 	
 		return rezultati;
 	}
-	static Evaluation vratiMatricu(Object klasifajer, Instances dataset, String imeObjekta ) throws Exception {
+	static Evaluation vratiMatricu(Object klasifajer, Instances dataset, String imeObjekta, boolean org ) throws Exception {
 	//System.out.println(dataset.toSummaryString());
 			//the filter
 			NominalToBinary remove = new NominalToBinary();
@@ -141,11 +144,25 @@ public class MikroKlasifikatori {
 			case "SMO":
 				fc.setClassifier((SMO)klasifajer);
 				break;
+			case "IBk":
+				fc.setClassifier((IBk)klasifajer);
+				break;
+			case "NBTree":
+				fc.setClassifier((NBTree)klasifajer);
+				break;
+			case "OneR":
+				fc.setClassifier((OneR)klasifajer);
+				break;
 			}
 			//Build the meta-classifier
 			fc.buildClassifier(dataset);
 			Evaluation eval = new Evaluation(dataset);
-			eval.evaluateModel(fc, dataset);
+			if(org) {
+				eval.crossValidateModel(fc, dataset, 5, new Random(1));
+			}else {
+				eval.evaluateModel(fc, dataset);
+			}
+			
 			
 			
 			return eval;

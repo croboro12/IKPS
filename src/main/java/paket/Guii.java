@@ -13,6 +13,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.RefineryUtilities;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -37,6 +38,7 @@ import javax.swing.JLabel;
 import weka.core.FastVector;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
+import javax.swing.JTextField;
 
 public class Guii extends JFrame {
 	private int testvalja=0,treningvalja=0,returnVal;
@@ -50,7 +52,6 @@ public class Guii extends JFrame {
 	public static Double[] xos = new Double[10];
 	public static Double[] geomtocnosto = new Double[10];
 	public static int brojactoc = 0, brojactresh = 8;
-	private JButton btnObradi = new JButton("Obradi");
 	JButton btnReset = new JButton("Reset");
 	/**
 	 * Launch the application.t
@@ -78,68 +79,9 @@ public class Guii extends JFrame {
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		setResizable(false);
-		btnObradi.setEnabled(false);
 
 		textArea = new TextArea();
 		textArea.setBounds(16, 34, 293, 115);
-		
-		final JButton btnUcitaj = new JButton("Ucitaj");
-		btnUcitaj.setBounds(291, 5, 89, 23);
-		contentPane.add(btnUcitaj);
-		btnUcitaj.setEnabled(false); // ovo stavi da je zatamnjeno dok se ne ucita i trening i test podaci
-		
-		btnUcitaj.addActionListener(new ActionListener() {  // ucitaj button
-			  public void actionPerformed(ActionEvent e) { 
-				 try {
-					ucitavanje = new UcitajPodatke(pathtrening,pathtest); // poziva objekt i ucitava podatke
-					textArea.setText("Podaci spremni"); //ispis da su podaci spremni
-					btnUcitaj.setEnabled(false); // kad su podaci spremljeni ne moze se nista pozivati dok se novi odaberu
-					btnObradi.setEnabled(true);
-					
-					
-				 } catch (Exception e1) {
-					
-					e1.printStackTrace();
-				}
-				}} );
-		
-		JButton btnUcitajPodatke = new JButton("Trening"); //ucitava trening podatke
-		btnUcitajPodatke.setBounds(16, 5, 89, 23);
-		btnUcitajPodatke.addActionListener(new ActionListener() { 
-			  public void actionPerformed(ActionEvent e) { 
-				 fc = new JFileChooser();
-				  returnVal = fc.showOpenDialog(fc);
-				
-				    if (returnVal == JFileChooser.APPROVE_OPTION) {
-				        file = fc.getSelectedFile();
-				        // What to do with the file, e.g. display it in a TextArea
-				       	pathtrening = file.getAbsolutePath().toString(); //sprema path od treninga
-				       
-				        try {
-				        	if (pathtrening.endsWith(".arff")) { // ako path treninga fajl podataka zavrsava sa arff
-				        		
-				        		textArea.append("\nTrening je odabran: "+pathtrening);//ispis puta treninga
-				        		treningvalja = 1;//flag da li format trening podataka valja
-				        		}else {
-				        			textArea.append("\nFormat treninga nije valjan\n"); // oznaka da valja
-				        			treningvalja = 0; // format nije zadovoljen
-				        			btnObradi.setEnabled(false);
-				        		}
-							
-						} catch (Exception e1) {
-							
-							e1.printStackTrace();
-						}
-				    } else {
-				        System.out.println("File access cancelled by user.");
-				    }
-				    if(testvalja==1 && treningvalja==1) {
-						btnUcitaj.setEnabled(true);//gledal dal moze enablat buton
-					}else {
-						btnUcitaj.setEnabled(false);	//siv button
-			  		}
-				  } 
-				} );
 		
 		
 		
@@ -150,60 +92,21 @@ public class Guii extends JFrame {
 		panel.setBounds(412, 90, 22, 175);
 		contentPane.setLayout(null);
 		contentPane.add(textArea);
-		contentPane.add(btnUcitajPodatke);
+		
 		contentPane.add(canvas);
 		contentPane.add(panel);
-		
-		JButton btnUcitajTest = new JButton("Test");
-		btnUcitajTest.addActionListener(new ActionListener() { 
-			  public void actionPerformed(ActionEvent e) { 
-				  fc = new JFileChooser();
-				  returnVal = fc.showOpenDialog(fc);
-				
-				    if (returnVal == JFileChooser.APPROVE_OPTION) {
-				        file = fc.getSelectedFile();
-				        // What to do with the file, e.g. display it in a TextArea
-				       pathtest = file.getAbsolutePath().toString();
-				    
-				        try {
-				        	if (pathtest.endsWith(".arff")) { // ako zavrsava sa arff onda je priznat 
-				        		
-				        		textArea.append("\nTest je odabran: "+pathtest); // ispis puta testa
-				        		testvalja = 1; //format testa valja
-				        		
-				        		}else {
-				        			textArea.append("\nFormat testa nije valjan\n");
-				        			testvalja = 0; //format testa ne valja
-				        			btnObradi.setEnabled(false);
-				        		}
-							
-						} catch (Exception e1) {
-							
-							e1.printStackTrace();
-						}
-				    } else {
-				        System.out.println("File access cancelled by user.");
-				    }
-				    if(testvalja==1 && treningvalja==1) {
-						btnUcitaj.setEnabled(true); // gleda dal moze enableat button za uctiavanjae
-					}else{
-						btnUcitaj.setEnabled(false); //ako ne valja gumb je siv
-					}
-				  } 
-				} );
-		btnUcitajTest.setBounds(161, 5, 89, 23);
-		contentPane.add(btnUcitajTest);
 		
 		JButton btnCsvarff = new JButton("CSV-ARFF");//pretvorba csv u arff format
 		btnCsvarff.setBounds(16, 161, 113, 23);
 		contentPane.add(btnCsvarff);
 		
-		final JButton btntocnosti = new JButton("Prikazi graf tocnosti");
+		final JButton btntocnosti = new JButton("Graf Fmeasure");
 		btntocnosti.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					
-						 Graph(poljetocnosti,geomtocnosto,brojactresh,xos);
+					Graph("fmeasure");
+
 					
 				} catch (Exception e1) {
 				
@@ -212,26 +115,8 @@ public class Guii extends JFrame {
 			}
 		});
 		btntocnosti.setEnabled(false);
-		btntocnosti.setBounds(138, 161, 113, 23);
+		btntocnosti.setBounds(139, 161, 113, 23);
 		contentPane.add(btntocnosti);
-		
-		
-		btnObradi.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					 if(testvalja==1 && treningvalja==1) {
-						 ThresholdRad.manipuliraj(ucitavanje);
-						 btntocnosti.setEnabled(true);
-						
-					 }
-				} catch (Exception e1) {
-					
-					e1.printStackTrace();
-				}
-			}
-		});
-		btnObradi.setBounds(16, 195, 89, 23);
-		contentPane.add(btnObradi);
 		
 		JButton btnOcistiProzor = new JButton("Ocisti prozor");
 		btnOcistiProzor.addActionListener(new ActionListener() {
@@ -268,8 +153,8 @@ public class Guii extends JFrame {
 		btnReset.setBounds(138, 195, 89, 23);
 		contentPane.add(btnReset);
 		
-		JButton btnAlokacija = new JButton("TreningAlokatora");
-		btnAlokacija.setBounds(261, 161, 89, 23);
+		JButton btnAlokacija = new JButton("Alokacijska Metoda");
+		btnAlokacija.setBounds(16, 5, 132, 23);
 		btnAlokacija.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) { 
 				  fc = new JFileChooser();
@@ -285,7 +170,10 @@ public class Guii extends JFrame {
 					        		
 					        		textArea.append("\nSkup podataka odabran: " + pathalloc); // ispis puta testa
 					        		MajorityMin.alloc(pathalloc);
-					        		
+					        		DataSource source = new DataSource(pathalloc);
+									KlasaZaOsnovnoRac.baznoRac(new Instances(source.getDataSet()));
+									btntocnosti.setEnabled(true);
+					        		AdaBoost.AdaBoo(new Instances(source.getDataSet()));
 				        		}else {
 				        			textArea.append("\nFormat podataka nije valjan\n");
 				        			
@@ -302,6 +190,24 @@ public class Guii extends JFrame {
 				  } 
 				} );
 		contentPane.add(btnAlokacija);
+		
+		JButton btnGrafAccuracy = new JButton("Graf Accuracy");
+		btnGrafAccuracy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					
+					Graph("accuracy");
+
+					
+				} catch (Exception e1) {
+				
+					e1.printStackTrace();
+				}
+			}
+		});
+		btntocnosti.setEnabled(false);
+		btnGrafAccuracy.setBounds(264, 161, 89, 23);
+		contentPane.add(btnGrafAccuracy);
 		
 		btnCsvarff.addActionListener(new ActionListener() { 
 			  public void actionPerformed(ActionEvent e) { 
@@ -337,30 +243,22 @@ public class Guii extends JFrame {
 		
 		
 	}
-	public static void Graph(Double poljetocnosti[], Double geomtocnosto[],int brojactresh,Double xos[]) {
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-		DefaultCategoryDataset dataset1 = new DefaultCategoryDataset();
-		for(int it = 0; it < brojactresh; it++) {
-			dataset.setValue(new Double(poljetocnosti[it]), "Values", String.valueOf(it)); //spremanje rijednosti na y i x os
-			dataset1.setValue(new Double(geomtocnosto[it]), "Values", String.valueOf(xos[it]));
-		//	System.out.print(xos[it]);
+	public static void Graph(String ime) {
+		if(ime == "fmeasure") {
+			BarChart_AWT chart = new BarChart_AWT("Fmeasure", 
+			        "Podaci Fmeasure");
+			      chart.pack( );        
+			      RefineryUtilities.centerFrameOnScreen( chart );        
+			      chart.setVisible( true ); 
+		}else if(ime == "accuracy"){
+			BarChart_AWT chart = new BarChart_AWT("Accuracy", 
+			         "Podaci Accuracy");
+			      chart.pack( );        
+			      RefineryUtilities.centerFrameOnScreen( chart );        
+			      chart.setVisible( true ); 
 		}
 		
-		//izrada i prikaz grafa
 		
-		JFreeChart chart = ChartFactory.createLineChart("Toènost", "Broj treshold granice", "Postotak toènosti", dataset,PlotOrientation.VERTICAL, false, true, false);
-		JFreeChart chart1 = ChartFactory.createLineChart("Geometrijska tocnost", "Omjer jedinica", "Postotak toènosti", dataset1,PlotOrientation.VERTICAL, false, true, false);
-		CategoryPlot p = chart.getCategoryPlot();
-		p.setRangeGridlinePaint(Color.BLUE);
-		ChartFrame frame = new ChartFrame("Graf tocnosti",chart);
-		frame.setVisible(true);
-		frame.setSize(450,350);
-		
-		CategoryPlot p1 = chart1.getCategoryPlot();
-		p1.setRangeGridlinePaint(Color.BLUE);
-		ChartFrame frame1 = new ChartFrame("Graf tocnosti",chart1);
-		frame1.setVisible(true);
-		frame1.setSize(450,350);
 	}
 	public static void Pisi(String tekst) {
 		textArea.appendText(tekst); // sluzi za pisanje po textboxu iz drugih klasa

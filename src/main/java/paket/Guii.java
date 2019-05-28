@@ -47,7 +47,7 @@ public class Guii extends JFrame {
 	private  File file;
 	private JFileChooser fc;
 	private static TextArea textArea;
-	private UcitajPodatke ucitavanje;
+	
 	public static Double[] poljetocnosti = new Double[10];
 	public static Double[] xos = new Double[10];
 	public static Double[] geomtocnosto = new Double[10];
@@ -153,43 +153,7 @@ public class Guii extends JFrame {
 		btnReset.setBounds(138, 195, 89, 23);
 		contentPane.add(btnReset);
 		
-		JButton btnAlokacija = new JButton("Alokacijska Metoda");
-		btnAlokacija.setBounds(16, 5, 132, 23);
-		btnAlokacija.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) { 
-				  fc = new JFileChooser();
-				  returnVal = fc.showOpenDialog(fc);
-				
-				    if (returnVal == JFileChooser.APPROVE_OPTION) {
-				        file = fc.getSelectedFile();
-				        // What to do with the file, e.g. display it in a TextArea
-				       pathalloc = file.getAbsolutePath().toString(); //uzima path od fajla
-				      
-				        try {
-				        		if (pathalloc.endsWith(".arff")) { // ako zavrsava sa arff onda je priznat 
-					        		
-					        		textArea.append("\nSkup podataka odabran: " + pathalloc); // ispis puta testa
-					        		MajorityMin.alloc(pathalloc);
-					        		DataSource source = new DataSource(pathalloc);
-									KlasaZaOsnovnoRac.baznoRac(new Instances(source.getDataSet()));
-									btntocnosti.setEnabled(true);
-					        		AdaBoost.AdaBoo(new Instances(source.getDataSet()));
-				        		}else {
-				        			textArea.append("\nFormat podataka nije valjan\n");
-				        			
-				        		}
-							
-						} catch (Exception e1) {
-							
-							e1.printStackTrace();
-						}
-				    } else {
-				        System.out.println("File access cancelled by user.");
-				    }
-				    
-				  } 
-				} );
-		contentPane.add(btnAlokacija);
+		
 		
 		JButton btnGrafAccuracy = new JButton("Graf Accuracy");
 		btnGrafAccuracy.addActionListener(new ActionListener() {
@@ -205,7 +169,7 @@ public class Guii extends JFrame {
 				}
 			}
 		});
-		btntocnosti.setEnabled(false);
+		btnGrafAccuracy.setEnabled(false);
 		btnGrafAccuracy.setBounds(264, 161, 89, 23);
 		contentPane.add(btnGrafAccuracy);
 		
@@ -240,6 +204,48 @@ public class Guii extends JFrame {
 				    
 				  } 
 				} );
+		JButton btnAlokacija = new JButton("Alokacijska Metoda");
+		btnAlokacija.setBounds(16, 5, 132, 23);
+		btnAlokacija.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) { 
+				  fc = new JFileChooser();
+				  returnVal = fc.showOpenDialog(fc);
+				
+				    if (returnVal == JFileChooser.APPROVE_OPTION) {
+				        file = fc.getSelectedFile();
+				        // What to do with the file, e.g. display it in a TextArea
+				       pathalloc = file.getAbsolutePath().toString(); //uzima path od fajla
+				      
+				        try {
+				        		if (pathalloc.endsWith(".arff")) { // ako zavrsava sa arff onda je priznat 
+					        		
+					        		textArea.append("\nSkup podataka odabran: " + pathalloc); // ispis puta testa
+					        		MajorityMin.alloc(pathalloc);
+					        		DataSource source = new DataSource(pathalloc);
+									KlasaZaOsnovnoRac.baznoRac(new Instances(source.getDataSet()));
+									
+					        		AdaBoost.AdaBoo(new Instances(source.getDataSet()));
+					        		Baging.bagg(new Instances(source.getDataSet()));
+					        		
+					        		btntocnosti.setEnabled(true);
+									btnGrafAccuracy.setEnabled(true);
+									ProglasiNajboljeg.najboljiJe();
+				        		}else {
+				        			textArea.append("\nFormat podataka nije valjan\n");
+				        			
+				        		}
+							
+						} catch (Exception e1) {
+							
+							e1.printStackTrace();
+						}
+				    } else {
+				        System.out.println("File access cancelled by user.");
+				    }
+				    
+				  } 
+				} );
+		contentPane.add(btnAlokacija);
 		
 		
 	}

@@ -27,19 +27,21 @@ public class MajorityMin {
 	static int pozicijamaxa = 0;
 	static Instances vecinskeKlase;
 	static Rezulat[] rezultati= new Rezulat[6];
-	static {
-		rezultati[0] = new Rezulat("J48","alloc");
-		rezultati[1] = new Rezulat("NaiveBayes","alloc");
-		rezultati[2] = new Rezulat("SMO","alloc");
-		rezultati[3] = new Rezulat("NBTree","alloc");
-		rezultati[4] = new Rezulat("OneR","alloc");
-		rezultati[5] = new Rezulat("IBk","alloc");
 	
 		
-	}
+	
+		
+	
 	public static void alloc(String path) throws Exception {
 		//load dataset
-				
+				rezultati[0] = new Rezulat("J48","alloc");
+				rezultati[1] = new Rezulat("NaiveBayes","alloc");
+				rezultati[2] = new Rezulat("SMO","alloc");
+				rezultati[3] = new Rezulat("NBTree","alloc");
+				rezultati[4] = new Rezulat("OneR","alloc");
+				rezultati[5] = new Rezulat("IBk","alloc");
+			
+		
 				DataSource source = new DataSource(path); // uzima path od dataseta
 				//treba napraviti 5fold cros validaciju podataka 80:20
 				Instances trainingData;
@@ -114,16 +116,7 @@ public class MajorityMin {
 				 */
 			
 				
-				
-				/* Bagging a classifier to reduce variance.
-				 * Can do classification and regression (depending on the base model)
-				 */
-				//Bagging .. 
-				Bagging bagger = new Bagging();
-				bagger.setClassifier(new RandomTree());//needs one base-model
-				bagger.setNumIterations(25);
-				//bagger.buildClassifier(trainingData);		
-				
+			
 				/*
 				 * The Stacking method combines several models
 				 * Can do classification or regression. 

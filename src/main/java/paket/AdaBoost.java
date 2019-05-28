@@ -39,7 +39,7 @@ public class AdaBoost {
 		m1.setClassifier(new J48());
 		
 		eval.crossValidateModel(m1, dataset, 5, new Random(1));	
-		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "J48", true);
+		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "J48", "ab");
 		
 
 
@@ -48,7 +48,7 @@ public class AdaBoost {
 		m1.buildClassifier(dataset);
 		eval = new Evaluation(dataset);
 		eval.crossValidateModel(m1, dataset, 5, new Random(1));	
-		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "Bayes", true);
+		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "Bayes", "ab");
 		
 		
 		m1.setClassifier(new SMO());
@@ -56,7 +56,7 @@ public class AdaBoost {
 		m1.buildClassifier(dataset);
 		eval = new Evaluation(dataset);
 		eval.crossValidateModel(m1, dataset, 5, new Random(1));	
-		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "SMO", true);
+		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "SMO", "ab");
 		
 		
 		
@@ -65,7 +65,7 @@ public class AdaBoost {
 		m1.buildClassifier(dataset);
 		eval = new Evaluation(dataset);
 		eval.crossValidateModel(m1, dataset, 5, new Random(1));	
-		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "NBTree", true);
+		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "NBTree", "ab");
 		
 		
 		m1.setClassifier(new OneR());
@@ -73,7 +73,7 @@ public class AdaBoost {
 		m1.buildClassifier(dataset);
 		eval = new Evaluation(dataset);
 		eval.crossValidateModel(m1, dataset, 5, new Random(1));	
-		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "OneR", true);
+		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "OneR", "ab");
 		
 		
 		m1.setClassifier(new IBk());
@@ -81,7 +81,7 @@ public class AdaBoost {
 		m1.buildClassifier(dataset);
 		eval = new Evaluation(dataset);
 		eval.crossValidateModel(m1, dataset, 5, new Random(1));	
-		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "IBk", true);
+		KlasaZaOsnovnoRac.ispisiTocnost(eval, dataset.numClasses(), "IBk", "ab");
 	}
 	
 }
